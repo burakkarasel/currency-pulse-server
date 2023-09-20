@@ -24,14 +24,11 @@ export abstract class AbstractRepository {
       password,
       connectionLimit: 10,
     });
-    console.log(this.pool);
   }
 
   async query(sql: string, args?: any[]): Promise<any> {
     return new Promise((resolve, reject) => {
       this.pool.getConnection((err, conn) => {
-        console.log("error: ", err);
-        console.log("connection: ", conn);
         if (err) {
           reject(err);
         }

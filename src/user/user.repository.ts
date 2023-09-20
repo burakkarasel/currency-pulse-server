@@ -23,10 +23,10 @@ export class UserRepository extends AbstractRepository {
     await this.query(sql, [user.id, user.email, user.password, user.createdAt]);
   }
 
-  async findUserByEmail(email: string) {
+  async findUserByEmail(email: string): Promise<any> {
     try {
       const sql =
-        "SELECT id, email, password, created_at as createdAt FROM users WHERE email = ? LIMIT = 1";
+        "SELECT id, email, password, created_at as createdAt FROM users WHERE email = ? LIMIT 1";
       const res = await this.query(sql, [email]);
       if (!res.length) {
         throw new NotFoundException("User not found with given credentials");
@@ -37,10 +37,10 @@ export class UserRepository extends AbstractRepository {
     }
   }
 
-  async findUserById(id: string) {
+  async findUserById(id: string): Promise<any> {
     try {
       const sql =
-        "SELECT id, email, created_at as createdAt FROM users WHERE id = ? LIMIT = 1";
+        "SELECT id, email, created_at as createdAt FROM users WHERE id = ? LIMIT 1";
       const res = await this.query(sql, [id]);
       if (!res.length) {
         throw new NotFoundException("User not found");
