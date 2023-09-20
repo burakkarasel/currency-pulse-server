@@ -32,7 +32,9 @@ export class UserService {
         createdAt: toCreate.createdAt,
       });
     } catch (err) {
-      if (err.code === "1062") {
+      // mysql error code for duplicate entry
+      if (err.errno === 1062) {
+        console.log(err);
         throw new ConflictException("Credentials are already taken");
       }
       throw err;
