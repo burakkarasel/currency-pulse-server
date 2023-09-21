@@ -9,9 +9,14 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.use(cookieParser());
+  app.enableCors({
+    origin: ["http://localhost:3000"],
+    methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
+    credentials: true,
+  });
   const configService = app.get(ConfigService);
   const currenciesService = app.get(CurrenciesService);
-  //currenciesService.seedCurrencies();
+  currenciesService.seedCurrencies();
   await app.listen(+configService.getOrThrow("PORT"));
 }
 bootstrap();
