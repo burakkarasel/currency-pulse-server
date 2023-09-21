@@ -71,21 +71,6 @@ export class CurrenciesService {
     return currency;
   }
 
-  // @Cron(CronExpression.EVERY_MINUTE)
-  // async handleMinuteRotation() {
-  //   try {
-  //     const currentGoldValue = await this.getCurrentGoldValue();
-  //     await this.currenciesRepository.createCurrency(currentGoldValue);
-  //     await this.minuteTargetHelper(currentGoldValue.value);
-  //     await this.minuteTenPercentHelper(currentGoldValue.value);
-  //   } catch (error) {
-  //     this.logger.error(error);
-  //     throw new InternalServerErrorException(
-  //       `Something went wrong while handling per minute rotation: ${error.message}`,
-  //     );
-  //   }
-  // }
-
   async getCurrentGoldValue(): Promise<Currency> {
     const res = await axios.get(this.configService.getOrThrow("API_URL"));
     return new Currency({
@@ -99,22 +84,6 @@ export class CurrenciesService {
   async getCurrentValueOf(currencies: Currencies): Promise<number> {
     return this.currenciesRepository.getCurrentValueOf(currencies);
   }
-
-  // @Cron(CronExpression.EVERY_5_HOURS)
-  // async handleFiveHourRotation() {
-  //   try {
-  //     await this.fiveHourHelper();
-  //   } catch (error) {
-  //     this.logger.error(
-  //       `Something went wrong during 5 hour rotation ${error.message}`,
-  //     );
-  //     throw error;
-  //   }
-  // }
-
-  // calculatePercentage(rate: number, average: number): number {
-  //   return (average / rate) * 100 - 100;
-  // }
 
   async getLastFiveHoursAverage(): Promise<number> {
     return this.currenciesRepository.getLastFiveHoursAverage();
