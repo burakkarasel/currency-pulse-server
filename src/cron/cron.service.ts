@@ -24,7 +24,6 @@ export class CronService {
     try {
       const currentGoldValue =
         await this.currenciesService.getCurrentGoldValue();
-      currentGoldValue.value = 2000;
       await this.currenciesService.createCurrency(currentGoldValue);
       await this.minuteTargetHelper(currentGoldValue.value);
       await this.minuteTenPercentHelper(currentGoldValue.value);
@@ -82,6 +81,7 @@ export class CronService {
             content,
             createdAt: new Date(),
             userId: item.userId,
+            status: false,
           }),
           alarmId: item.id,
           field: "target_notification_id",
@@ -116,6 +116,7 @@ export class CronService {
             content,
             createdAt: new Date(),
             userId: item.userId,
+            status: false,
           }),
           alarmId: item.id,
           field: "ten_percent_notification_id",
@@ -180,9 +181,9 @@ export class CronService {
   }
 
   prepareNotificationContent(alarm: Alarm, currentGoldValue: number): string {
-    return `
-    Your alarm for ${alarm.currencyName}: 
-    ${alarm.currencyName} increased ${this.roundToTwoDecimals(
+    return `Your alarm for ${alarm.currencyName}: ${
+      alarm.currencyName
+    } increased ${this.roundToTwoDecimals(
       this.calculatePercentage(alarm.currentGoldRate, currentGoldValue),
     )} percent. It went from ${alarm.rate} to ${this.calculateTargetRate(
       alarm.rate,

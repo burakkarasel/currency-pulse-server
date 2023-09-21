@@ -8,3 +8,21 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     ports:
       - '3306:3306'
+  server:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+      target: development
+    command: pnpm start:dev
+    env_file:
+      - .env
+    restart: always
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/usr/src/app
+    deploy:
+      mode: replicated
+      replicas: 1
+    depends_on:
+      - db

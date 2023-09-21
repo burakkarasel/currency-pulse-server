@@ -37,7 +37,7 @@ export class CurrenciesRepository extends AbstractRepository {
     const createdAt = new Date();
     createdAt.setHours(createdAt.getHours() - 5);
     const sql = "DELETE FROM currencies WHERE created_at < ? AND name = 'G-1'";
-    await this.query(sql, []);
+    await this.query(sql, [createdAt]);
   }
 
   async getLastFiveHoursAverage(): Promise<number> {
