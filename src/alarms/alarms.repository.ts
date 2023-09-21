@@ -32,12 +32,13 @@ export class AlarmsRepository extends AbstractRepository {
 
   async createAlarm(alarm: Alarm): Promise<Alarm> {
     const sql =
-      "INSERT INTO `alarms`(id, currency_name, user_id, rate, target_rate, ten_percent_notification_id, ten_percent_rotation_notification_id, target_notification_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+      "INSERT INTO `alarms`(id, currency_name, user_id, rate, current_gold_rate, target_rate, ten_percent_notification_id, ten_percent_rotation_notification_id, target_notification_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     await this.query(sql, [
       alarm.id,
       alarm.currencyName,
       alarm.userId,
       alarm.rate,
+      alarm.currentGoldRate,
       alarm.targetRate,
       alarm.tenPercentNotificationId,
       alarm.tenPercentRotationNotificationId,
@@ -49,7 +50,7 @@ export class AlarmsRepository extends AbstractRepository {
 
   async listAlarmsByTargetRate(targetRate: number) {
     const sql = `
-    SELECT id, currency_name as currencyName, user_id as userId, rate,
+    SELECT id, currency_name as currencyName, user_id as userId, rate, current_gold_rate as currentGoldRate,
     target_rate as targetRate, target_notification_id as targetNotificationId,
     ten_percent_notification_id as tenPercentNotificationId,
     ten_percent_rotation_notification_id as tenPercentRotationNotificationId, created_at as createdAt 
@@ -62,7 +63,7 @@ export class AlarmsRepository extends AbstractRepository {
 
   async listAlarmsByTenPercent(currentRate: number) {
     const sql = `
-    SELECT id, currency_name as currencyName, user_id as userId, rate, 
+    SELECT id, currency_name as currencyName, user_id as userId, rate, current_gold_rate as currentGoldRate,
     target_rate as targetRate, target_notification_id as targetNotificationId, 
     ten_percent_notification_id as tenPercentNotificationId,
     ten_percent_rotation_notification_id as tenPercentRotationNotificationId, created_at as createdAt 
@@ -75,7 +76,7 @@ export class AlarmsRepository extends AbstractRepository {
 
   async listAlarmsByTenPercentRotation(currentRate: number) {
     const sql = `
-    SELECT id, currency_name as currencyName, user_id as userId, rate,
+    SELECT id, currency_name as currencyName, user_id as userId, rate, current_gold_rate as currentGoldRate,
     target_rate as targetRate, target_notification_id as targetNotificationId,
     ten_percent_notification_id as tenPercentNotificationId,
     ten_percent_rotation_notification_id as tenPercentRotationNotificationId, created_at as createdAt

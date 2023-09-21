@@ -4,6 +4,7 @@ export class Alarm extends AbstractEntity<Alarm> {
   currencyName: string;
   userId: string;
   rate: number;
+  currentGoldRate: number;
   targetRate: number;
   tenPercentNotificationId: string;
   tenPercentRotationNotificationId: string;

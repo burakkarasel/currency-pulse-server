@@ -11,7 +11,7 @@ async function bootstrap() {
   app.use(cookieParser());
   const configService = app.get(ConfigService);
   const currenciesService = app.get(CurrenciesService);
-  // currenciesService.seedCurrencies();
+  currenciesService.seedCurrencies();
   await app.listen(+configService.getOrThrow("PORT"));
 }
 bootstrap();

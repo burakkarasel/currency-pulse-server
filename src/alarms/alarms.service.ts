@@ -26,10 +26,13 @@ export class AlarmsService {
       const goldRate = await this.currenciesService.getCurrentValueOf(
         Currencies.GOLD,
       );
-      const targetRate = (dto.targetRate / rate) * goldRate;
+      const targetRate = this.roundToTwoDecimals(
+        (dto.targetRate / rate) * goldRate,
+      );
       const alarm = new Alarm({
         id: cryto.randomUUID(),
         currencyName: dto.currencyName,
+        currentGoldRate: goldRate,
         userId,
         rate,
         targetRate,
@@ -41,23 +44,6 @@ export class AlarmsService {
     } catch (err) {
       throw err;
     }
-  }
-
-  convertDbResultsToAlarms(alarms: any[]): Alarm[] {
-    return alarms.map(
-      (item: any) =>
-        new Alarm({
-          id: item.id,
-          currencyName: item.currencyName,
-          userId: item.userId,
-          rate: item.rate,
-          targetRate: item.targetRate,
-          targetNotificationId: item.targetNotificationId,
-          tenPercentNotificationId: item.tenPercentNotificationId,
-          tenPercentRotationNotificationId:
-            item.tenPercentRotationNotificationId,
-        }),
-    );
   }
 
   async listAlarmsByTargetRate(rate: number): Promise<Alarm[]> {
@@ -74,5 +60,28 @@ export class AlarmsService {
     const res =
       await this.alarmsRepository.listAlarmsByTenPercentRotation(rate);
     return this.convertDbResultsToAlarms(res);
+  }
+
+  convertDbResultsToAlarms(alarms: any[]): Alarm[] {
+    return alarms.map(
+      (item: any) =>
+        new Alarm({
+          id: item.id,
+          currencyName: item.currencyName,
+          userId: item.userId,
+          rate: item.rate,
+          currentGoldRate: item.currentGoldRate,
+          targetRate: item.targetRate,
+          targetNotificationId: item.targetNotificationId,
+          tenPercentNotificationId: item.tenPercentNotificationId,
+          tenPercentRotationNotificationId:
+            item.tenPercentRotationNotificationId,
+        }),
+    );
+  }
+
+  roundToTwoDecimals(float: number): number {
+    const roundedStr = float.toFixed(2);
+    return parseFloat(roundedStr);
   }
 }

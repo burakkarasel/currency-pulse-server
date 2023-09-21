@@ -21,6 +21,7 @@ export class NotificationsService {
   convertDbResultToNotification(res: any): Notification {
     return new Notification({
       id: res.id,
+      title: res.title,
       content: res.content,
       createdAt: res.createdAt,
       userId: res.userId,

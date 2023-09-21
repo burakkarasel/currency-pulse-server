@@ -7,6 +7,7 @@ import { CreateNotificationDto } from "src/notifications/dto";
 import { NotificationsService } from "src/notifications/notifications.service";
 import { Notification } from "src/notifications/entity";
 import * as crypto from "crypto";
+import { Alarm } from "src/alarms/entity";
 
 @Injectable()
 export class CronService {
@@ -17,10 +18,6 @@ export class CronService {
     private readonly alarmsService: AlarmsService,
     private readonly currenciesService: CurrenciesService,
   ) {}
-
-  calculatePercentage(rate: number, average: number): number {
-    return (average / rate) * 100 - 100;
-  }
 
   @Cron(CronExpression.EVERY_MINUTE)
   async handleMinuteRotation() {
@@ -42,7 +39,9 @@ export class CronService {
   @Cron(CronExpression.EVERY_5_HOURS)
   async handleFiveHourRotation() {
     try {
-      await this.fiveHourHelper();
+      const currentGoldValue =
+        await this.currenciesService.getCurrentGoldValue();
+      await this.fiveHourHelper(currentGoldValue.value);
       this.logger.verbose("Successfully completed the per 5 hour rotation");
     } catch (error) {
       this.logger.error(
@@ -65,20 +64,20 @@ export class CronService {
     }
   }
 
+  calculatePercentage(rate: number, average: number): number {
+    return (average / rate) * 100 - 100;
+  }
+
   async minuteTargetHelper(currentGoldValue: number) {
     try {
       const needToNotify =
         await this.alarmsService.listAlarmsByTargetRate(currentGoldValue);
       const toWriteDb: CreateNotificationDto[] = needToNotify.map((item) => {
-        const content = `Your alarm request for ${
-          item.currencyName
-        } increased ${this.calculatePercentage(
-          item.rate,
-          item.targetRate,
-        )} and reached ${item.targetRate} right now`;
+        const content = this.prepareNotificationContent(item, currentGoldValue);
         return new CreateNotificationDto({
           notification: new Notification({
             id: crypto.randomUUID(),
+            title: "Reached Target",
             content,
             createdAt: new Date(),
             userId: item.userId,
@@ -108,15 +107,11 @@ export class CronService {
       const needToNotify =
         await this.alarmsService.listAlarmsByTenPercent(currentGoldValue);
       const toWriteDb: CreateNotificationDto[] = needToNotify.map((item) => {
-        const content = `Your alarm request for ${
-          item.currencyName
-        } increased ${this.calculatePercentage(
-          item.rate,
-          item.targetRate,
-        )} and reached ${item.targetRate} right now`;
+        const content = this.prepareNotificationContent(item, currentGoldValue);
         return new CreateNotificationDto({
           notification: new Notification({
             id: crypto.randomUUID(),
+            title: "Reached %10",
             content,
             createdAt: new Date(),
             userId: item.userId,
@@ -141,7 +136,7 @@ export class CronService {
     }
   }
 
-  async fiveHourHelper() {
+  async fiveHourHelper(currentGoldValue: number) {
     try {
       // first we get the last five hours average for the gold value
       const average = await this.currenciesService.getLastFiveHoursAverage();
@@ -150,15 +145,11 @@ export class CronService {
         await this.alarmsService.listAlarmsByTenPercentRotation(average);
       // then we transform the values so we can write DB
       const toWriteDb: CreateNotificationDto[] = needToNotify.map((item) => {
-        const content = `Your alarm request for ${
-          item.currencyName
-        } increased ${this.calculatePercentage(
-          item.rate,
-          average,
-        )} for the last 5 hours`;
+        const content = this.prepareNotificationContent(item, currentGoldValue);
         return new CreateNotificationDto({
           notification: new Notification({
             id: crypto.randomUUID(),
+            title: "Reached %10 last five hours",
             content,
             userId: item.userId,
             createdAt: new Date(),
@@ -185,5 +176,30 @@ export class CronService {
       );
       throw error;
     }
+  }
+
+  prepareNotificationContent(alarm: Alarm, currentGoldValue: number): string {
+    return `
+    Your alarm for ${alarm.currencyName}: 
+    ${alarm.currencyName} increased ${this.roundToTwoDecimals(
+      this.calculatePercentage(alarm.currentGoldRate, currentGoldValue),
+    )} percent. It went from ${alarm.rate} to ${this.calculateTargetRate(
+      alarm.rate,
+      currentGoldValue,
+      alarm.targetRate,
+    )}`;
+  }
+
+  calculateTargetRate(
+    rate: number,
+    currentGoldRate: number,
+    targetRate: number,
+  ): number {
+    return this.roundToTwoDecimals((rate / currentGoldRate) * targetRate);
+  }
+
+  roundToTwoDecimals(float: number): number {
+    const roundedStr = float.toFixed(2);
+    return parseFloat(roundedStr);
   }
 }

@@ -19,7 +19,7 @@ export class NotificationsRepository extends AbstractRepository {
 
   async listUsersNotifications(userId: string) {
     const sql =
-      "SELECT id, content, user_id as userId, status, created_at as createdAt FROM notifications WHERE user_id = ?";
+      "SELECT id, title, content, user_id as userId, status, created_at as createdAt FROM notifications WHERE user_id = ?";
     const res = await this.query(sql, [userId]);
     return res;
   }
@@ -44,12 +44,13 @@ export class NotificationsRepository extends AbstractRepository {
             );
             reject(secondErr);
           }
-          const insert = `INSERT INTO notifications (id, user_id, content, status, created_at) VALUES(?, ?, ?, ?, ?)`;
+          const insert = `INSERT INTO notifications (id, user_id, title, content, status, created_at) VALUES(?, ?, ?, ?, ?)`;
           conn.query(
             insert,
             [
               notification.id,
               notification.userId,
+              notification.title,
               notification.content,
               notification.status,
               notification.createdAt,
