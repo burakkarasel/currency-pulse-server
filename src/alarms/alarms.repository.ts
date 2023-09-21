@@ -17,6 +17,19 @@ export class AlarmsRepository extends AbstractRepository {
     super(config);
   }
 
+  async listUsersAlarms(userId: string) {
+    const sql = `
+    SELECT id, currency_name as currencyName, user_id as userId, rate,
+    target_rate as targetRate, target_notification_id as targetNotificationId,
+    ten_percent_notification_id as tenPercentNotificationId,
+    ten_percent_rotation_notification_id as tenPercentRotationNotificationId, created_at as createdAt 
+    FROM alarms 
+    WHERE user_id = ?
+    `;
+    const res = await this.query(sql, [userId]);
+    return res;
+  }
+
   async createAlarm(alarm: Alarm): Promise<Alarm> {
     const sql =
       "INSERT INTO `alarms`(id, currency_name, user_id, rate, target_rate, ten_percent_notification_id, ten_percent_rotation_notification_id, target_notification_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";

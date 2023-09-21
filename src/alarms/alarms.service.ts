@@ -13,6 +13,11 @@ export class AlarmsService {
     private readonly currenciesService: CurrenciesService,
   ) {}
 
+  async listUsersAlarms(userId: string): Promise<Alarm[]> {
+    const res = await this.alarmsRepository.listUsersAlarms(userId);
+    return this.convertDbResultsToAlarms(res);
+  }
+
   async createAlarm(dto: CreateAlarmDto, userId: string): Promise<Alarm> {
     try {
       const rate = await this.currenciesService.getCurrentValueOf(
