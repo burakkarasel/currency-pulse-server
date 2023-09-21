@@ -38,16 +38,20 @@ export class CurrenciesService {
       currencies.push(
         new Currency({
           id: crypto.randomUUID(),
-          name: res.data.data.C.USD.code,
-          value: res.data.data.C.USD.selling,
+          name: "USD",
+          value: res.data.data.find((item: any) => item["SEMBOL"] === "USDTRY")[
+            "SATIS"
+          ],
           createdAt: new Date(),
         }),
       );
       currencies.push(
         new Currency({
           id: crypto.randomUUID(),
-          name: res.data.data.C.EUR.code,
-          value: res.data.data.C.EUR.selling,
+          name: "EUR",
+          value: res.data.data.find((item: any) => item["SEMBOL"] === "EURTRY")[
+            "SATIS"
+          ],
           createdAt: new Date(),
         }),
       );
@@ -55,7 +59,9 @@ export class CurrenciesService {
         new Currency({
           id: crypto.randomUUID(),
           name: "G-1",
-          value: res.data.data.G["gram-altin"].selling,
+          value: res.data.data.find((item: any) => item["SEMBOL"] === "GLDGR")[
+            "SATIS"
+          ],
           createdAt: new Date(),
         }),
       );
@@ -74,7 +80,9 @@ export class CurrenciesService {
   async getCurrentGoldValue(): Promise<Currency> {
     const res = await axios.get(this.configService.getOrThrow("API_URL"));
     return new Currency({
-      value: res.data.data.G["gram-altin"].selling,
+      value: res.data.data.find((item: any) => item["SEMBOL"] === "GLDGR")[
+        "SATIS"
+      ],
       name: "G-1",
       createdAt: new Date(),
       id: crypto.randomUUID(),

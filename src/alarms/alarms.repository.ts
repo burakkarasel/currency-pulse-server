@@ -32,7 +32,7 @@ export class AlarmsRepository extends AbstractRepository {
 
   async createAlarm(alarm: Alarm): Promise<Alarm> {
     const sql =
-      "INSERT INTO `alarms`(id, currency_name, user_id, rate, current_gold_rate, target_rate, ten_percent_notification_id, ten_percent_rotation_notification_id, target_notification_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+      "INSERT INTO `alarms`(id, currency_name, user_id, rate, current_gold_rate, target_rate, ten_percent_notification_id, ten_percent_rotation_notification_id, target_notification_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     await this.query(sql, [
       alarm.id,
       alarm.currencyName,

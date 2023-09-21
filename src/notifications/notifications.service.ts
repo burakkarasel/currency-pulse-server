@@ -10,7 +10,6 @@ export class NotificationsService {
   ) {}
 
   async createNotification(dto: CreateNotificationDto): Promise<Notification> {
-    console.log("Notifications Repository: ", this.notificationsRepository);
     return this.notificationsRepository.createNewNotification(
       dto.notification,
       dto.alarmId,

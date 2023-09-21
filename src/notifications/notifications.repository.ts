@@ -44,7 +44,7 @@ export class NotificationsRepository extends AbstractRepository {
             );
             reject(secondErr);
           }
-          const insert = `INSERT INTO notifications (id, user_id, title, content, status, created_at) VALUES(?, ?, ?, ?, ?)`;
+          const insert = `INSERT INTO notifications (id, user_id, title, content, status, created_at) VALUES(?, ?, ?, ?, ?, ?)`;
           conn.query(
             insert,
             [
