@@ -17,6 +17,13 @@ export class NotificationsRepository extends AbstractRepository {
     super(config);
   }
 
+  async listUsersNotifications(userId: string) {
+    const sql =
+      "SELECT id, content, user_id as userId, status, created_at as createdAt FROM notifications WHERE user_id = ?";
+    const res = await this.query(sql, [userId]);
+    return res;
+  }
+
   async createNewNotification(
     notification: Notification,
     alarmId: string,

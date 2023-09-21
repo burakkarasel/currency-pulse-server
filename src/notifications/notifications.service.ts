@@ -17,4 +17,20 @@ export class NotificationsService {
       dto.field,
     );
   }
+
+  convertDbResultToNotification(res: any): Notification {
+    return new Notification({
+      id: res.id,
+      content: res.content,
+      createdAt: res.createdAt,
+      userId: res.userId,
+      status: res.status,
+    });
+  }
+
+  async listUsersNotifications(userId: string): Promise<Notification[]> {
+    const res =
+      await this.notificationsRepository.listUsersNotifications(userId);
+    return res.map(this.convertDbResultToNotification);
+  }
 }
