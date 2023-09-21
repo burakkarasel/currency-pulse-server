@@ -17,12 +17,12 @@ export class AlarmsRepository extends AbstractRepository {
     super(config);
   }
 
-  async createAlarm(alarm: Alarm): Promise<void> {
+  async createAlarm(alarm: Alarm): Promise<Alarm> {
     const sql =
-      "INSERT INTO `alarms`(id, currency_id, user_id, rate, target_rate, ten_percent_notification_id, ten_percent_rotation_notification_id, target_notification_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+      "INSERT INTO `alarms`(id, currency_name, user_id, rate, target_rate, ten_percent_notification_id, ten_percent_rotation_notification_id, target_notification_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     await this.query(sql, [
       alarm.id,
-      alarm.currencyId,
+      alarm.currencyName,
       alarm.userId,
       alarm.rate,
       alarm.targetRate,
@@ -31,5 +31,45 @@ export class AlarmsRepository extends AbstractRepository {
       alarm.targetNotificationId,
       alarm.createdAt,
     ]);
+    return alarm;
+  }
+
+  async listAlarmsByTargetRate(targetRate: number) {
+    const sql = `
+    SELECT id, currency_name as currencyName, user_id as userId, rate,
+    target_rate as targetRate, target_notification_id as targetNotificationId,
+    ten_percent_notification_id as tenPercentNotificationId,
+    ten_percent_rotation_notification_id as tenPercentRotationNotificationId, created_at as createdAt 
+    FROM alarms 
+    WHERE target_notification_id IS NULL AND target_rate <= ?
+    `;
+    const res = await this.query(sql, [targetRate]);
+    return res;
+  }
+
+  async listAlarmsByTenPercent(currentRate: number) {
+    const sql = `
+    SELECT id, currency_name as currencyName, user_id as userId, rate, 
+    target_rate as targetRate, target_notification_id as targetNotificationId, 
+    ten_percent_notification_id as tenPercentNotificationId,
+    ten_percent_rotation_notification_id as tenPercentRotationNotificationId, created_at as createdAt 
+    FROM alarms 
+    WHERE ten_percent_notification_id IS NULL AND rate * 1.10 <= ?
+    `;
+    const res = await this.query(sql, [currentRate]);
+    return res;
+  }
+
+  async listAlarmsByTenPercentRotation(currentRate: number) {
+    const sql = `
+    SELECT id, currency_name as currencyName, user_id as userId, rate,
+    target_rate as targetRate, target_notification_id as targetNotificationId,
+    ten_percent_notification_id as tenPercentNotificationId,
+    ten_percent_rotation_notification_id as tenPercentRotationNotificationId, created_at as createdAt
+    FROM alarms 
+    WHERE ten_percent_rotation_notification_id IS NULL AND rate * 1.10 <= ?
+    `;
+    const res = await this.query(sql, [currentRate]);
+    return res;
   }
 }

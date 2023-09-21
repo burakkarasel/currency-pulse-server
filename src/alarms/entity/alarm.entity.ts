@@ -1,7 +1,7 @@
 import { AbstractEntity } from "src/database/abstract.entity";
 
 export class Alarm extends AbstractEntity<Alarm> {
-  currencyId: string;
+  currencyName: string;
   userId: string;
   rate: number;
   targetRate: number;

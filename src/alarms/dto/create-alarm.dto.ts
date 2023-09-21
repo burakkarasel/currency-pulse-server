@@ -1,13 +1,11 @@
-import { IsNotEmpty, IsNumber, IsString, IsUUID } from "class-validator";
+import { IsEnum, IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { Currencies } from "src/currencies/enums";
 
 export class CreateAlarmDto {
   @IsNotEmpty()
-  @IsUUID()
   @IsString()
-  currencyId: string;
-  @IsNotEmpty()
-  @IsNumber()
-  rate: number;
+  @IsEnum(Currencies)
+  currencyName: Currencies;
   @IsNotEmpty()
   @IsNumber()
   targetRate: number;
