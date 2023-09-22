@@ -21,18 +21,21 @@ export class AuthService {
 
   async validateUser(email: string, password: string): Promise<UserDto> {
     try {
+      // fetch user from DB
       const user = await this.userService.findUserByEmail(email);
       if (!user) {
         throw new UnauthorizedException(
           "User Not found with given credentials",
         );
       }
+      // compare passwords
       const compareResult = await bcryptjs.compare(password, user.password);
       if (!compareResult) {
         throw new UnauthorizedException(
           "User Not found with given credentials",
         );
       }
+      // return the dto
       return new UserDto({
         id: user.id,
         email: user.email,
@@ -44,8 +47,9 @@ export class AuthService {
   }
 
   async signIn(user: UserDto, res: Response): Promise<string> {
+    // sign token for the user
     const token = await this.signToken(user);
-
+    // put it in a cookie
     res.cookie("token", token, {
       secure: false,
       domain: "localhost",

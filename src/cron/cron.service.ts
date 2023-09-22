@@ -22,6 +22,8 @@ export class CronService {
   @Cron(CronExpression.EVERY_MINUTE)
   async handleMinuteRotation() {
     try {
+      // get the current gold value
+      // ! you can change the value of the current gold value to test notifications
       const currentGoldValue =
         await this.currenciesService.getCurrentGoldValue();
       await this.currenciesService.createCurrency(currentGoldValue);
@@ -70,8 +72,10 @@ export class CronService {
 
   async minuteTargetHelper(currentGoldValue: number) {
     try {
+      // first fetch the alarms that needs to be notified
       const needToNotify =
         await this.alarmsService.listAlarmsByTargetRate(currentGoldValue);
+      // then create dtos to insert db
       const toWriteDb: CreateNotificationDto[] = needToNotify.map((item) => {
         const content = this.prepareNotificationContent(item, currentGoldValue);
         return new CreateNotificationDto({
@@ -87,6 +91,7 @@ export class CronService {
           field: "target_notification_id",
         });
       });
+      // then insert notifications and update the alarms
       await Promise.all(
         toWriteDb.map((item) => {
           return this.notificationsService.createNotification(item);
@@ -105,8 +110,10 @@ export class CronService {
 
   async minuteTenPercentHelper(currentGoldValue: number) {
     try {
+      // first fetch the alarms that needs to be notified
       const needToNotify =
         await this.alarmsService.listAlarmsByTenPercent(currentGoldValue);
+      // then create dtos to insert db
       const toWriteDb: CreateNotificationDto[] = needToNotify.map((item) => {
         const content = this.prepareNotificationContent(item, currentGoldValue);
         return new CreateNotificationDto({
@@ -122,6 +129,7 @@ export class CronService {
           field: "ten_percent_notification_id",
         });
       });
+      // then insert notifications and update the alarms
       await Promise.all(
         toWriteDb.map((item) => {
           return this.notificationsService.createNotification(item);

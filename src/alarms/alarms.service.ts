@@ -20,12 +20,14 @@ export class AlarmsService {
 
   async createAlarm(dto: CreateAlarmDto, userId: string): Promise<Alarm> {
     try {
+      // get the current value of the currency and the gold
       const rate = await this.currenciesService.getCurrentValueOf(
         dto.currencyName,
       );
       const goldRate = await this.currenciesService.getCurrentValueOf(
         Currencies.GOLD,
       );
+      // calculate the target rate
       const targetRate = this.roundToTwoDecimals(
         (dto.targetRate / rate) * goldRate,
       );

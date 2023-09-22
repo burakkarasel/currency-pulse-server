@@ -30,6 +30,7 @@ export class NotificationsRepository extends AbstractRepository {
     field: string,
   ): Promise<Notification> {
     return new Promise((resolve, reject) => {
+      // first establish connection
       this.pool.getConnection((firstErr, conn) => {
         if (firstErr) {
           reject(firstErr);
@@ -37,6 +38,7 @@ export class NotificationsRepository extends AbstractRepository {
             `Couldnt create a connection with pool: ${firstErr.message}`,
           );
         }
+        // start transaction
         conn.beginTransaction((secondErr) => {
           if (secondErr) {
             this.logger.error(
@@ -44,6 +46,7 @@ export class NotificationsRepository extends AbstractRepository {
             );
             reject(secondErr);
           }
+          // insert notification
           const insert = `INSERT INTO notifications (id, user_id, title, content, status, created_at) VALUES(?, ?, ?, ?, ?, ?)`;
           conn.query(
             insert,
@@ -62,6 +65,7 @@ export class NotificationsRepository extends AbstractRepository {
                 );
                 return conn.rollback(() => reject(thirdErr));
               }
+              // update the alarm's field with the created notification
               const update = `UPDATE alarms SET ?? = ? WHERE id = ?`;
               conn.query(
                 update,
