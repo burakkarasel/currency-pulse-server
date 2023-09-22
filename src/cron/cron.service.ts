@@ -24,6 +24,7 @@ export class CronService {
     try {
       const currentGoldValue =
         await this.currenciesService.getCurrentGoldValue();
+      currentGoldValue.value = 2100;
       await this.currenciesService.createCurrency(currentGoldValue);
       await this.minuteTargetHelper(currentGoldValue.value);
       await this.minuteTenPercentHelper(currentGoldValue.value);
@@ -41,6 +42,7 @@ export class CronService {
     try {
       const currentGoldValue =
         await this.currenciesService.getCurrentGoldValue();
+      currentGoldValue.value = 2000;
       await this.fiveHourHelper(currentGoldValue.value);
       this.logger.verbose("Successfully completed the per 5 hour rotation");
     } catch (error) {

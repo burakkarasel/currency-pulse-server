@@ -10,13 +10,23 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.use(cookieParser());
   app.enableCors({
-    origin: ["http://localhost:3000"],
+    origin: ["http://localhost:5173"],
     methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
     credentials: true,
+    allowedHeaders: [
+      "Access-Control-Allow-Credentials",
+      "Access-Control-Allow-Origin",
+      "Origin",
+      "X-Requested-With",
+      "Content-Type",
+      "Accept",
+      "Authorization",
+      "Authentication",
+    ],
   });
   const configService = app.get(ConfigService);
   const currenciesService = app.get(CurrenciesService);
-  currenciesService.seedCurrencies();
+  // currenciesService.seedCurrencies();
   await app.listen(+configService.getOrThrow("PORT"));
 }
 bootstrap();

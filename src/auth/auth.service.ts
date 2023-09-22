@@ -43,13 +43,16 @@ export class AuthService {
     }
   }
 
-  async signIn(user: UserDto, res: Response): Promise<void> {
+  async signIn(user: UserDto, res: Response): Promise<string> {
     const token = await this.signToken(user);
-    const expires = new Date();
-    expires.setSeconds(
-      expires.getSeconds() + this.configService.getOrThrow("TOKEN_EXPIRATION"),
-    );
-    res.cookie("token", token, { expires, httpOnly: true });
+
+    res.cookie("token", token, {
+      secure: false,
+      domain: "localhost",
+      httpOnly: true,
+      maxAge: this.configService.getOrThrow("TOKEN_EXPIRATION") * 1000,
+    });
+    return token;
   }
 
   async signToken(user: UserDto): Promise<string> {

@@ -25,6 +25,7 @@ export class AlarmsRepository extends AbstractRepository {
     ten_percent_rotation_notification_id as tenPercentRotationNotificationId, created_at as createdAt 
     FROM alarms 
     WHERE user_id = ?
+    ORDER BY created_at DESC
     `;
     const res = await this.query(sql, [userId]);
     return res;
