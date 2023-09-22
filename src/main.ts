@@ -26,7 +26,7 @@ async function bootstrap() {
   });
   const configService = app.get(ConfigService);
   const currenciesService = app.get(CurrenciesService);
-  // currenciesService.seedCurrencies();
+  currenciesService.seedCurrencies();
   await app.listen(+configService.getOrThrow("PORT"));
 }
 bootstrap();
