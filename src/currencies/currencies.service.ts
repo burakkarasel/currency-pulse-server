@@ -2,7 +2,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import { CurrenciesRepository } from "./currencies.repository";
 import { ConfigService } from "@nestjs/config";
 import axios from "axios";
-import { Currency } from "./entity.ts";
+import { Currency } from "./entity";
 import * as crypto from "crypto";
 import { Currencies } from "./enums";
 

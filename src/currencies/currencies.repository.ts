@@ -5,7 +5,7 @@ import {
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { AbstractRepository } from "src/database/abstract.repository";
-import { Currency } from "./entity.ts";
+import { Currency } from "./entity/index.js";
 import { Currencies } from "./enums";
 
 @Injectable()

@@ -69,7 +69,7 @@ export class AlarmsRepository extends AbstractRepository {
     ten_percent_notification_id as tenPercentNotificationId,
     ten_percent_rotation_notification_id as tenPercentRotationNotificationId, created_at as createdAt 
     FROM alarms 
-    WHERE ten_percent_notification_id IS NULL AND rate * 1.10 <= ?
+    WHERE ten_percent_notification_id IS NULL AND current_gold_rate * 1.10 <= ?
     `;
     const res = await this.query(sql, [currentRate]);
     return res;
@@ -82,7 +82,7 @@ export class AlarmsRepository extends AbstractRepository {
     ten_percent_notification_id as tenPercentNotificationId,
     ten_percent_rotation_notification_id as tenPercentRotationNotificationId, created_at as createdAt
     FROM alarms 
-    WHERE ten_percent_rotation_notification_id IS NULL AND rate * 1.10 <= ?
+    WHERE ten_percent_rotation_notification_id IS NULL AND current_gold_rate * 1.10 <= ?
     `;
     const res = await this.query(sql, [currentRate]);
     return res;
